@@ -18,7 +18,6 @@ async def say_hello(credentials: JwtAuthorizationCredentials = Depends(access_se
         return {"message": "Hello, World!"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    # return {"message": "Hello, World!"}
 
 @auth_router.post('/signup')
 async def signup(user: SignUp, status_code=status.HTTP_201_CREATED):
