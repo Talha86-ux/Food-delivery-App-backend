@@ -68,3 +68,52 @@ async def get_orders_list(credentials: JwtAccessBearer = Depends(token_validator
         return jsonable_encoder(orders)
 
     # orders = session.query(OrderModel).filter(OrderModel.user_id == user.id).all()
+
+@order_router.get("/orders/{order_id}", status_code=status.HTTP_200_OK)
+async def get_order_by_id(order_id: int, credentials: JwtAccessBearer = Depends(token_validator)):
+    try:
+        current_user = credentials.subject["sub"]
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    
+    user = session.query(User).filter(User.username == current_user).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    if user.is_staff:
+        order = session.query(OrderModel).get(order_id)
+        if not order:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+        return jsonable_encoder(order)
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+@order_router.get("/user/orders", status_code=status.HTTP_200_OK)
+async def get_user_orders(credentials: JwtAccessBearer = Depends(token_validator)):
+    try:
+        current_user = credentials.subject["sub"]
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    
+    user = session.query(User).filter(User.username == current_user).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    return jsonable_encoder(user.orders)
+
+@order_router.get("/user/orders/{order_id}", status_code=status.HTTP_200_OK)
+async def get_user_order_by_id(order_id: int, credentials: JwtAccessBearer = Depends(token_validator)):
+    try:
+        current_user = credentials.subject["sub"]
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    
+    user = session.query(User).filter(User.username == current_user).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    orders = user.orders
+    for order in orders:
+        if order.id == order_id:
+            return jsonable_encoder(order)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    
+    
