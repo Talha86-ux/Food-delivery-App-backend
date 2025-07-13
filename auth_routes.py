@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from database import Session, engine
-from schemas import SignUp, Login
+from schemas import SignUp, Login, OrderStatusModel
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from fastapi.encoders import jsonable_encoder
