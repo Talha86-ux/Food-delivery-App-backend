@@ -42,3 +42,27 @@ class Order(BaseModel):
                 "pizza_size": "SMALL",
             }
         }
+
+class OrderStatusModel(BaseModel):
+    order_status: Optional[str]
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "order_status": "PENDING",
+            }
+        }
+
+class OrderCreate(BaseModel):
+    quantity: int
+    pizza_size: Optional[str] = 'SMALL'
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "quantity": 1,
+                "pizza_size": "SMALL",
+            }
+        }
